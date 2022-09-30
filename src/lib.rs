@@ -13,7 +13,7 @@ pub fn handle_anyix<'info>(
     accounts: &[AccountInfo<'info>],
     data: &[u8],
 ) -> ProgramResult {
-    let arb_ix = AnyIx::unpack(&data).unwrap();
+    let arb_ix = AnyIx::unpack(data).unwrap();
     let AnyIx {
         num_instructions,
         instruction_data_sizes: _,
@@ -144,7 +144,7 @@ mod test {
                     ix_2.data.len() as u8,
                     ix_3.data.len() as u8,
                 ],
-                instruction_datas: vec![ix_1.data.clone(), ix_2.data.clone(), ix_3.data.clone()],
+                instruction_datas: vec![ix_1.data, ix_2.data, ix_3.data],
                 instruction_account_counts: vec![3, 3, 3],
             };
             let want_arb_any_data = want_arb_any.pack().unwrap();
