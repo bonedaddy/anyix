@@ -53,15 +53,15 @@ pub fn handle_anyix<'info>(
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct AnyIx {
     /// the total number of individual instructions
-    num_instructions: u8,
-    instruction_data_sizes: Vec<u8>,
+    pub num_instructions: u8,
+    pub instruction_data_sizes: Vec<u8>,
     /// the number of accounts to use for a single instruction
     /// for example of this field is set to vec![10, 5], then the first instruction
     /// uses 10 accounts, with the second instruction using 5 accounts
-    instruction_account_counts: Vec<u8>,
+    pub instruction_account_counts: Vec<u8>,
     /// a vector of vectors, where each element is the instruction data
     /// to pass for instruction_datas[N]
-    instruction_datas: Vec<Vec<u8>>,
+    pub instruction_datas: Vec<Vec<u8>>,
 }
 
 impl AnyIx {
