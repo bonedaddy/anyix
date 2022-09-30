@@ -1,0 +1,14 @@
+[package]
+name = "anyix"
+version = "0.1.0"
+edition = "2021"
+authors = ["Bonedaddy"]
+description = "lightweight instruction encoding for arbitrary fallback execution"
+keywords = ["solana", "anchor"]
+license = "Apache-2.0"
+documentation = "https://docs.rs/anyix"
+readme = "../README.md"
+
+[dependencies]
+solana-program = ">=1.9"
+spl-token = ">=1.0"
