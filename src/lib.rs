@@ -50,6 +50,27 @@ pub fn handle_anyix<'info>(
     Ok(())
 }
 
+/// encodes a set of instructions into the AnyIx format
+pub fn encode_instructions(ixs: &[Instruction]) -> AnyIx {
+    let num_instructions = ixs.len();
+
+    let ix_data_sizes: Vec<u8> = ixs
+        .iter()
+        .map(|ix| ix.data.len().try_into().unwrap())
+        .collect();
+    let ix_datas = ixs.iter().map(|ix| ix.data.clone()).collect::<Vec<_>>();
+    let ix_account_counts: Vec<u8> = ixs
+        .iter()
+        .map(|ix| ix.accounts.len().try_into().unwrap())
+        .collect::<Vec<_>>();
+    AnyIx {
+        num_instructions: num_instructions as u8,
+        instruction_account_counts: ix_account_counts,
+        instruction_data_sizes: ix_data_sizes,
+        instruction_datas: ix_datas,
+    }
+}
+
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct AnyIx {
     /// the total number of individual instructions
@@ -69,6 +90,7 @@ impl AnyIx {
         if input.is_empty() {
             return Err(ProgramError::InvalidInstructionData);
         }
+
         let (num_instructions, data) = AnyIx::unpack_u8_slice(&input[0..], 1)?;
         let (instruction_data_sizes, data) =
             AnyIx::unpack_u8_slice(data, num_instructions[0] as usize)?;
@@ -144,12 +166,16 @@ mod test {
                     ix_2.data.len() as u8,
                     ix_3.data.len() as u8,
                 ],
-                instruction_datas: vec![ix_1.data, ix_2.data, ix_3.data],
+                instruction_datas: vec![ix_1.data.clone(), ix_2.data.clone(), ix_3.data.clone()],
                 instruction_account_counts: vec![3, 3, 3],
             };
             let want_arb_any_data = want_arb_any.pack().unwrap();
             let got_arb_aby = AnyIx::unpack(&want_arb_any_data).unwrap();
             assert_eq!(got_arb_aby, want_arb_any);
+
+            let encoded_ix = encode_instructions(&[ix_1, ix_2, ix_3]);
+
+            assert_eq!(want_arb_any, encoded_ix);
         }
     }
 }
