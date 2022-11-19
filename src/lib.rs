@@ -50,6 +50,46 @@ pub fn handle_anyix<'info>(
     Ok(())
 }
 
+/// this is an unsafe versio nof handle_anyix, which bypasses a variety of protection
+/// features
+pub fn handle_anyix_unsafe<'info>(
+    program_id: Pubkey,
+    accounts: &[AccountInfo<'info>],
+    data: &[u8],
+) -> ProgramResult {
+    let arb_ix = AnyIx::unpack(data).unwrap();
+    let AnyIx {
+        num_instructions,
+        instruction_data_sizes: _,
+        instruction_datas,
+        instruction_account_counts,
+    } = arb_ix;
+    let mut offset = 0;
+    for idx in 0..num_instructions {
+        let accounts =
+            &accounts[offset as usize..instruction_account_counts[idx as usize] as usize];
+        offset += instruction_account_counts[idx as usize];
+        solana_program::program::invoke(
+            &Instruction {
+                program_id,
+                accounts: accounts
+                    .iter()
+                    .map(|account| {
+                        if account.is_writable {
+                            AccountMeta::new(*account.key, account.is_signer)
+                        } else {
+                            AccountMeta::new_readonly(*account.key, account.is_signer)
+                        }
+                    })
+                    .collect(),
+                data: instruction_datas[idx as usize].clone(),
+            },
+            accounts,
+        )?;
+    }
+    Ok(())
+}
+
 /// encodes a set of instructions into the AnyIx format
 pub fn encode_instructions(ixs: &[Instruction]) -> AnyIx {
     let num_instructions = ixs.len();
