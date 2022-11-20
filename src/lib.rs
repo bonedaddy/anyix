@@ -37,7 +37,7 @@ pub fn handle_anyix<'info>(
         solana_program::program::invoke(
             &Instruction {
                 program_id: *program_account.key,
-                accounts: cpi_accounts[1..]
+                accounts: cpi_accounts
                     .iter()
                     .map(|account| {
                         if account.is_writable {
@@ -49,7 +49,7 @@ pub fn handle_anyix<'info>(
                     .collect(),
                 data: instruction_datas[idx as usize].clone(),
             },
-            &cpi_accounts[1..],
+            &cpi_accounts,
         )?;
     }
     Ok(())
