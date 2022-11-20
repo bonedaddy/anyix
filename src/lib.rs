@@ -44,7 +44,7 @@ pub fn handle_anyix<'info>(
                     .collect(),
                 data: instruction_datas[idx as usize].clone(),
             },
-            &accounts[1..],
+            accounts,
         )?;
     }
     Ok(())
