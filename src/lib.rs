@@ -173,6 +173,7 @@ impl Debug for AnyIx {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("AnyIx")
         .field("num_instructions", &self.num_instructions)
+        .field("account_couns", &self.instruction_account_counts)
         .field("instruction_data_sizes", &self.instruction_data_sizes).finish()
     }
 }
