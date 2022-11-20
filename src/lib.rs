@@ -26,7 +26,7 @@ pub fn handle_anyix<'info>(
     for idx in 0..num_instructions {
         use solana_program::msg;
         let accounts =
-            &accounts[offset as usize..instruction_account_counts[idx as usize] as usize];
+            &accounts[offset as usize..instruction_account_counts[idx as usize] as usize + idx as usize];
         offset += instruction_account_counts[idx as usize];
         let program_account = &accounts[0];
         if program_id.eq(program_account.key) {
