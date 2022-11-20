@@ -24,6 +24,7 @@ pub fn handle_anyix<'info>(
     } = arb_ix;
     let mut offset = 0;
     for idx in 0..num_instructions {
+        use solana_program::msg;
         let accounts =
             &accounts[offset as usize..instruction_account_counts[idx as usize] as usize];
         offset += instruction_account_counts[idx as usize];
@@ -31,6 +32,7 @@ pub fn handle_anyix<'info>(
         if program_id.eq(program_account.key) {
             panic!("self invocation not allowed");
         }
+        msg!("processing anyix(idx={}, num_accounts={}, offset={})", idx, accounts.len(), offset);
         solana_program::program::invoke(
             &Instruction {
                 program_id: *program_account.key,
@@ -46,7 +48,7 @@ pub fn handle_anyix<'info>(
                     .collect(),
                 data: instruction_datas[idx as usize].clone(),
             },
-            accounts,
+            &accounts[1..],
         )?;
     }
     Ok(())
