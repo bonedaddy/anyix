@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use solana_program::instruction::AccountMeta;
 use solana_program::instruction::Instruction;
 use solana_program::program_error::ProgramError;
@@ -111,7 +113,7 @@ pub fn encode_instructions(ixs: &[Instruction]) -> AnyIx {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct AnyIx {
     /// the total number of individual instructions
     pub num_instructions: u8,
@@ -162,6 +164,14 @@ impl AnyIx {
     // returns a slice of of `count` values
     fn unpack_u8_slice(input: &[u8], count: usize) -> Result<(&[u8], &[u8]), ProgramError> {
         Ok(input.split_at(count))
+    }
+}
+
+impl Debug for AnyIx {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AnyIx")
+        .field("num_instructions", &self.num_instructions)
+        .field("instruction_data_sizes", &self.instruction_data_sizes).finish()
     }
 }
 

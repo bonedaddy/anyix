@@ -1,6 +1,6 @@
 [package]
 name = "anyix"
-version = "0.1.6"
+version = "0.1.7"
 edition = "2021"
 authors = ["Bonedaddy"]
 description = "lightweight instruction encoding for arbitrary fallback execution"
