@@ -84,7 +84,7 @@ pub fn handle_anyix_unsafe<'info>(
                     .collect(),
                 data: instruction_datas[idx as usize].clone(),
             },
-            accounts,
+            &accounts[1..],
         )?;
     }
     Ok(())
