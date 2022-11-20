@@ -15,6 +15,7 @@ pub fn handle_anyix<'info>(
     accounts: &[AccountInfo<'info>],
     data: &[u8],
 ) -> ProgramResult {
+    solana_program::msg!("total accounts {}", accounts.len());
     let arb_ix = AnyIx::unpack(data).unwrap();
     let AnyIx {
         num_instructions,
@@ -25,18 +26,18 @@ pub fn handle_anyix<'info>(
     let mut offset = 0;
     for idx in 0..num_instructions {
         use solana_program::msg;
-        let accounts =
+        let cpi_accounts =
             &accounts[offset as usize..instruction_account_counts[idx as usize] as usize + idx as usize];
         offset += instruction_account_counts[idx as usize];
-        let program_account = &accounts[0];
+        let program_account = &cpi_accounts[0];
         if program_id.eq(program_account.key) {
             panic!("self invocation not allowed");
         }
-        msg!("processing anyix(idx={}, num_accounts={}, offset={})", idx, accounts.len(), offset);
+        msg!("processing anyix(idx={}, num_accounts={}, offset={})", idx, cpi_accounts.len(), offset);
         solana_program::program::invoke(
             &Instruction {
                 program_id: *program_account.key,
-                accounts: accounts[1..]
+                accounts: cpi_accounts[1..]
                     .iter()
                     .map(|account| {
                         if account.is_writable {
@@ -48,7 +49,7 @@ pub fn handle_anyix<'info>(
                     .collect(),
                 data: instruction_datas[idx as usize].clone(),
             },
-            &accounts[1..],
+            &cpi_accounts[1..],
         )?;
     }
     Ok(())
